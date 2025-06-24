@@ -1,3 +1,5 @@
+import { Either, left, right } from '../helpers';
+import { InvalidPasswordError, InvalidEmailError } from '../errors';
 import { IBcryptService, IEmailValidatorService } from '../services';
 
 export interface UserProps {
@@ -8,25 +10,14 @@ export interface UserProps {
   updatedAt?: Date;
 }
 
-export class User {
+export class UserEntity {
   private user: UserProps;
-  emailValidatorService: IEmailValidatorService;
-  bcryptService: IBcryptService;
 
-  private constructor(
-    user: UserProps,
-    emailValidatorService: IEmailValidatorService,
-    bcryptService: IBcryptService,
-  ) {
-    this.emailValidatorService = emailValidatorService;
-    this.bcryptService = bcryptService;
+  private constructor(user: UserProps) {
     this.user = {
       ...user,
-      id: user.id || crypto.randomUUID(),
-      email: this.validateEmail(user.email),
-      password: user.password, // Will be set after hashing
-      createdAt: user.createdAt || new Date(),
-      updatedAt: user.updatedAt || new Date(),
+      email: user.email,
+      password: user.password,
     };
   }
 
@@ -34,39 +25,75 @@ export class User {
     data: UserProps,
     emailValidatorService: IEmailValidatorService,
     bcryptService: IBcryptService,
-  ): Promise<User> {
-    const newUser = new User(data, emailValidatorService, bcryptService);
-    newUser.user.password = await newUser.validatePassword(data.password);
-    return newUser;
+  ): Promise<Either<Error, UserEntity>> {
+    const newUser = new UserEntity(data);
+    newUser.validateEmail(newUser.user.email, emailValidatorService);
+    const validPassword = await newUser.validatePassword(
+      data.password,
+      bcryptService,
+    );
+    if (validPassword.isRight()) {
+      newUser.user.password = validPassword.value;
+    }
+    newUser.user.id = crypto.randomUUID();
+    newUser.user.createdAt = new Date();
+    return right(newUser);
   }
 
-  private validateEmail(email: string): string {
-    if (!this.emailValidatorService.isEmailValid(email)) {
-      throw new Error('E-mail inválido');
+  private validateEmail(
+    email: string,
+    emailValidator: IEmailValidatorService,
+  ): Either<InvalidEmailError, string> {
+    if (!emailValidator.isEmailValid(email)) {
+      return left(new InvalidEmailError(email));
     }
 
-    return email;
+    return right(email);
   }
 
-  private async validatePassword(password: string): Promise<string> {
+  private async validatePassword(
+    password: string,
+    bcryptService: IBcryptService,
+  ): Promise<Either<InvalidPasswordError, string>> {
     const STRONG_PASSWORD_REGEX =
       /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
 
     if (!STRONG_PASSWORD_REGEX.test(password)) {
-      throw new Error(
-        'A senha deve conter pelo menos 8 caracteres, incluindo uma letra maiúscula, uma minúscula, um número e um caractere especial (@$!%*?&)',
-      );
+      return left(new InvalidPasswordError());
     }
 
-    return await this.bcryptService.hash(password);
+    const hashPassword = await bcryptService.hash(password);
+    return right(hashPassword);
   }
 
-  public async updatePassword(newPassword: string): Promise<void> {
-    this.user.password = await this.validatePassword(newPassword);
-    this.user.updatedAt = new Date();
+  static async updatePassword(
+    user: UserProps,
+    bcryptService: IBcryptService,
+  ): Promise<Either<InvalidPasswordError, UserEntity>> {
+    const userObj = new UserEntity({
+      email: user.email,
+      password: user.password,
+    });
+    const hashPassword = await userObj.validatePassword(
+      user.password,
+      bcryptService,
+    );
+
+    if (hashPassword.isLeft()) {
+      return left(new InvalidPasswordError());
+    }
+    if (hashPassword.isRight()) {
+      userObj.user.password = hashPassword.value;
+      userObj.user.updatedAt = new Date();
+    }
+
+    return right(userObj);
   }
 
-  public validateCredentials(password: string): boolean {
-    return this.user.password === password;
+  public async validateCredentials(
+    password: string,
+    bcryptService: IBcryptService,
+  ): Promise<boolean> {
+    return await bcryptService.compare(password, this.user.password);
   }
 }
