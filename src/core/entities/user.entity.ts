@@ -27,11 +27,24 @@ export class UserEntity {
     bcryptService: IBcryptService,
   ): Promise<Either<Error, UserEntity>> {
     const newUser = new UserEntity(data);
-    newUser.validateEmail(newUser.user.email, emailValidatorService);
+    const validEmail = newUser.validateEmail(
+      newUser.user.email,
+      emailValidatorService,
+    );
+
+    if (validEmail.isLeft()) {
+      return left(new InvalidEmailError(newUser.user.email));
+    }
+
     const validPassword = await newUser.validatePassword(
       data.password,
       bcryptService,
     );
+
+    if (validPassword.isLeft()) {
+      return left(new InvalidPasswordError());
+    }
+
     if (validPassword.isRight()) {
       newUser.user.password = validPassword.value;
     }
