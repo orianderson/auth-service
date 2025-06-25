@@ -11,7 +11,7 @@ export interface UserProps {
 }
 
 export class UserEntity {
-  private user: UserProps;
+  user: UserProps;
 
   private constructor(user: UserProps) {
     this.user = {

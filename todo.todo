@@ -1,0 +1,20 @@
+* Usecases
+
+1. Autenticação
+
+1.1 Registro de Usuários
+
+[x] - E-mail válido
+[x] - Senha forte (regex + hash)
+[ ] - Confirmação por e-mail (double opt-in)
+
+* DTO - Data Transfer Object
+
+* Factory para criação de usuários (camada de presentation)?
+
+// user.factory.ts
+export class UserFactory {
+  static createFromDto(dto: CreateUserDto): User {
+    return new User(dto.username, dto.email, dto.password);
+  }
+}
