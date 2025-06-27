@@ -4,7 +4,7 @@ import { RegisterUserUseCase } from '../../app';
 import { RegisterUserInput } from '../../core';
 
 @Injectable()
-export class UserService {
+export class AuthService {
   constructor(private readonly registerUserUseCase: RegisterUserUseCase) {}
 
   async register(user: RegisterUserInput) {
