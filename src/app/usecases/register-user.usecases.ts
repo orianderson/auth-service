@@ -6,9 +6,16 @@ import {
   IEmailValidatorService,
   IUserRepository,
   UserEntity,
+  Either,
+  left,
+  right,
 } from '../../core';
 import { ConflictException } from '../helpers/conflict-exceptions';
-import { InvalidEmailError, InvalidPasswordError } from '../../core';
+import {
+  InvalidEmailError,
+  InvalidPasswordError,
+  InvalidDataError,
+} from '../../core';
 import { BadRequestException } from '../helpers';
 
 export class RegisterUserUseCase implements IRegisterUserUseCase {
@@ -18,8 +25,16 @@ export class RegisterUserUseCase implements IRegisterUserUseCase {
     private readonly userRepository: IUserRepository,
   ) {}
 
-  async execute(input: RegisterUserInput): Promise<RegisterUserOutput> {
+  async execute(
+    input: RegisterUserInput,
+  ): Promise<
+    Either<
+      InvalidEmailError | InvalidPasswordError | InvalidDataError,
+      RegisterUserOutput
+    >
+  > {
     const isUser = await this.userRepository.findByEmail(input.email);
+
     if (isUser) {
       throw new ConflictException({
         message: 'User already exists',
@@ -34,16 +49,12 @@ export class RegisterUserUseCase implements IRegisterUserUseCase {
 
     if (newUser.isLeft()) {
       if (newUser.value instanceof InvalidEmailError) {
-        throw new BadRequestException({ message: 'Invalid email format' });
+        return left(new InvalidEmailError(input.email));
       }
       if (newUser.value instanceof InvalidPasswordError) {
-        throw new BadRequestException({
-          message:
-            'The password must contain: alphabetical character (lowercase, uppercase), at least 1 numeric character, at least one special character and must be eight characters or longer',
-        });
+        return left(new InvalidPasswordError());
       }
-      // If newUser isLeft but not an InvalidEmailError or InvalidPasswordError, throw a generic error
-      throw new BadRequestException({ message: 'Invalid user data' });
+      return left(new InvalidDataError());
     }
 
     await this.userRepository.create({
@@ -53,10 +64,10 @@ export class RegisterUserUseCase implements IRegisterUserUseCase {
       createdAt: newUser.value.user.createdAt,
     });
 
-    return {
+    return right({
       id: newUser.value.user.id,
       email: newUser.value.user.email,
       createdAt: newUser.value.user.createdAt,
-    };
+    });
   }
 }

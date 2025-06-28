@@ -1,5 +1,19 @@
+import {
+  InvalidDataError,
+  InvalidEmailError,
+  InvalidPasswordError,
+} from '../errors';
+import { Either } from '../helpers';
+
 export interface IRegisterUserUseCase {
-  execute(input: RegisterUserInput): Promise<RegisterUserOutput>;
+  execute(
+    input: RegisterUserInput,
+  ): Promise<
+    Either<
+      InvalidEmailError | InvalidPasswordError | InvalidDataError,
+      RegisterUserOutput
+    >
+  >;
 }
 
 export type RegisterUserInput = {

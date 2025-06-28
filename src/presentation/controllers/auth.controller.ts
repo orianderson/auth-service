@@ -1,7 +1,6 @@
-import { Body, Controller, Post, Res } from '@nestjs/common';
+import { Body, Controller, Post, Res, HttpCode } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { AuthService } from '../services/user.service';
-import { FastifyReply } from 'fastify';
+import { AuthService } from '../services/auth.service';
 
 import { CreateUserDto, CreateUserResponseDto } from '../dtos';
 import { StatusResponse } from '../../app';
@@ -14,21 +13,11 @@ export class AuthController {
   constructor(readonly authService: AuthService) {}
 
   @Post('register')
+  @HttpCode(StatusResponse.CREATED.statusCode)
   async registerUser(
     @Body() createUserDto: CreateUserDto,
-    @Res() reply: FastifyReply,
-  ): Promise<void> {
-    try {
-      const user = await this.authService.register(createUserDto);
-
-      return reply.code(StatusResponse.CREATED.statusCode).send(user);
-    } catch (error) {
-      return reply
-        .status(StatusResponse.INTERNAL_SERVER_ERROR.statusCode)
-        .send({
-          statusCode: StatusResponse.INTERNAL_SERVER_ERROR.statusCode,
-          message: 'Internal server error',
-        });
-    }
+  ): Promise<CreateUserResponseDto> {
+    const user = await this.authService.register(createUserDto);
+    return user;
   }
 }

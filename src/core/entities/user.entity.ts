@@ -27,6 +27,7 @@ export class UserEntity {
     bcryptService: IBcryptService,
   ): Promise<Either<Error, UserEntity>> {
     const newUser = new UserEntity(data);
+
     const validEmail = newUser.validateEmail(
       newUser.user.email,
       emailValidatorService,

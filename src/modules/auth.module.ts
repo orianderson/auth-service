@@ -1,9 +1,14 @@
 import { Module } from '@nestjs/common';
 
-import { AuthService } from '../presentation/services/user.service';
+import { AuthService } from '../presentation/services/auth.service';
 import { RegisterUserUseCase } from '../app/usecases';
 
-import { BcryptService, EmailValidatorService, UserRepository } from '../infra';
+import {
+  BcryptService,
+  EmailValidatorService,
+  PrismaService,
+  UserRepository,
+} from '../infra';
 import {
   IBcryptService,
   IEmailValidatorService,
@@ -11,9 +16,10 @@ import {
 } from '../core';
 
 import { AuthController } from '../presentation';
+import { DatabaseModule } from './database.module';
 
 @Module({
-  imports: [],
+  imports: [DatabaseModule],
   controllers: [AuthController],
   providers: [
     AuthService,
@@ -26,9 +32,17 @@ import { AuthController } from '../presentation';
       ) => new RegisterUserUseCase(bcrypt, emailValidator, userRepository),
       inject: ['IBcryptService', 'IEmailValidatorService', 'IUserRepository'],
     },
+    {
+      provide: UserRepository,
+      useFactory: (databaseService: PrismaService) => {
+        new UserRepository(databaseService);
+      },
+      inject: ['PrismaService'],
+    },
     { provide: 'IBcryptService', useClass: BcryptService },
     { provide: 'IEmailValidatorService', useClass: EmailValidatorService },
     { provide: 'IUserRepository', useClass: UserRepository },
+    { provide: 'PrismaService', useClass: PrismaService },
     BcryptService,
     EmailValidatorService,
     UserRepository,

@@ -1,12 +1,11 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AuthController } from '../controllers';
-import { UserService } from '../services/user.service';
+import { AuthService } from '../services/auth.service';
 import { CreateUserDto } from '../dtos';
-import { FastifyReply } from 'fastify';
 
 describe('AuthController', () => {
   let controller: AuthController;
-  let userService: Partial<UserService>;
+  let userService: Partial<AuthService>;
 
   beforeEach(async () => {
     userService = {
@@ -19,7 +18,7 @@ describe('AuthController', () => {
 
     const module: TestingModule = await Test.createTestingModule({
       controllers: [AuthController],
-      providers: [{ provide: UserService, useValue: userService }],
+      providers: [{ provide: AuthService, useValue: userService }],
     }).compile();
 
     controller = module.get<AuthController>(AuthController);
@@ -32,9 +31,8 @@ describe('AuthController', () => {
     } as CreateUserDto;
     const send = jest.fn();
     const code = jest.fn(() => ({ send }));
-    const reply = { code } as unknown as FastifyReply;
 
-    await controller.registerUser(dto, reply);
+    await controller.registerUser(dto);
 
     expect(userService.register).toHaveBeenCalledWith(dto);
     expect(code).toHaveBeenCalledWith(201);
