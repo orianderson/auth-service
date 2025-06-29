@@ -43,18 +43,4 @@ Este documento descreve o fluxo completo de registro de usuário no serviço de 
 
 ## Diagrama do Fluxo
 
-```plantuml
-@startuml
-actor Cliente
-
-Cliente -> AuthController : POST /auth/register\n(CreateUserDto)
-AuthController -> AuthService : register(user)
-AuthService -> RegisterUserUseCase : execute(user)
-RegisterUserUseCase -> UserDomainService : validarDados(user)
-RegisterUserUseCase -> UserEntity : criarInstancia(user)
-RegisterUserUseCase -> UserRepository : save(UserEntity)
-UserRepository --> RegisterUserUseCase : User criado
-RegisterUserUseCase --> AuthService : CreateUserResponseDto
-AuthService --> AuthController : CreateUserResponseDto
-AuthController --> Cliente : HTTP 201 + dados
-```
+![uml_diagram](user-register-flow.png)
