@@ -1,14 +1,14 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AuthController } from '../controllers';
 import { AuthService } from '../services/auth.service';
-import { CreateUserDto } from '../dtos';
+import { CreateUserDto, CreateUserResponseDto } from '../dtos';
 
 describe('AuthController', () => {
   let controller: AuthController;
-  let userService: Partial<AuthService>;
+  let authService: Partial<AuthService>;
 
   beforeEach(async () => {
-    userService = {
+    authService = {
       register: jest.fn().mockResolvedValue({
         id: '1',
         email: 'test@email.com',
@@ -18,7 +18,7 @@ describe('AuthController', () => {
 
     const module: TestingModule = await Test.createTestingModule({
       controllers: [AuthController],
-      providers: [{ provide: AuthService, useValue: userService }],
+      providers: [{ provide: AuthService, useValue: authService }],
     }).compile();
 
     controller = module.get<AuthController>(AuthController);
@@ -29,17 +29,28 @@ describe('AuthController', () => {
       email: 'test@email.com',
       password: 'Abcdef1!',
     } as CreateUserDto;
-    const send = jest.fn();
-    const code = jest.fn(() => ({ send }));
 
-    await controller.registerUser(dto);
+    const result = await controller.registerUser(dto);
 
-    expect(userService.register).toHaveBeenCalledWith(dto);
-    expect(code).toHaveBeenCalledWith(201);
-    expect(send).toHaveBeenCalledWith({
+    expect(authService.register).toHaveBeenCalledWith(dto);
+    expect(result).toEqual({
       id: '1',
       email: 'test@email.com',
       message: 'User created',
     });
+  });
+
+  it('should throw if register fails', async () => {
+    (authService.register as jest.Mock).mockRejectedValueOnce(
+      new Error('Register failed'),
+    );
+    const dto: CreateUserDto = {
+      email: 'fail@email.com',
+      password: 'Abcdef1!',
+    } as CreateUserDto;
+
+    await expect(controller.registerUser(dto)).rejects.toThrow(
+      'Register failed',
+    );
   });
 });

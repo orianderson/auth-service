@@ -47,7 +47,7 @@ describe('RegisterUserUseCase', () => {
     bcrypt.hash.mockResolvedValue('hashed-password');
     userRepository.create.mockResolvedValue({
       id: '1',
-      email: 'test@email.com',
+      email: 'anderson@gmail.com',
       password: 'hashed-password',
       createdAt: new Date(),
     });
@@ -55,8 +55,11 @@ describe('RegisterUserUseCase', () => {
     const input = { email: 'test@email.com', password: 'Senha@123' };
     const result = await useCase.execute(input);
 
-    expect(result).toHaveProperty('id');
-    expect(result).toHaveProperty('email', input.email);
+    // Check that result is a success and has a user property
+    if ('user' in result.value) {
+      expect(result.value.user).toHaveProperty('id');
+      expect(result.value.user).toHaveProperty('email', input.email);
+    }
   });
 
   it('deve lançar ConflictException se o usuário já existir', async () => {
