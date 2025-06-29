@@ -1,0 +1,70 @@
+@startuml
+entity "System" as System {
+  +id: String [PK]
+  name: String
+  description: String
+  createdAt: DateTime
+  updatedAt: DateTime
+}
+
+entity "User" as User {
+  +id: String [PK]
+  email: String
+  name: String
+  password: String
+  termsAccepted: Boolean
+  privacyAccepted: Boolean
+  createdAt: DateTime
+  updatedAt: DateTime
+  system_id: String [FK]
+}
+
+entity "Role" as Role {
+  +id: String [PK]
+  name: String
+  description: String
+  createdAt: DateTime
+  system_id: String [FK]
+}
+
+entity "Module" as Module {
+  +id: String [PK]
+  name: String
+  description: String
+  createdAt: DateTime
+  updatedAt: DateTime
+  system_id: String [FK]
+}
+
+entity "UserRole" as UserRole {
+  +id: String [PK]
+  user_id: String [FK]
+  role_id: String [FK]
+  createdAt: DateTime
+  updatedAt: DateTime
+}
+
+entity "RoleModule" as RoleModule {
+  +id: String [PK]
+  role_id: String [FK]
+  module_id: String [FK]
+  createdAt: DateTime
+  updatedAt: DateTime
+}
+
+entity "UserUpdateHistory" as UserUpdateHistory {
+  +id: String [PK]
+  user_id: String [FK]
+  description: String
+  updatedAt: DateTime
+}
+
+System ||--o{ User : "users"
+System ||--o{ Role : "roles"
+System ||--o{ Module : "modules"
+User ||--o{ UserUpdateHistory : "updateHistories"
+User ||--o{ UserRole : "roles"
+Role ||--o{ UserRole : "userRoles"
+Role ||--o{ RoleModule : "roleModules"
+Module ||--o{ RoleModule : "roleModules"
+@enduml

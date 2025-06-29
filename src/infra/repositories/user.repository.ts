@@ -37,6 +37,12 @@ export class UserRepository implements IUserRepository {
         password: user.password,
         createdAt: user.createdAt,
         id: user.id,
+        name: user.name,
+        termsAccepted: !user.acceptedTerms ? false : user.acceptedTerms,
+        privacyAccepted: !user.acceptedPrivacyPolicy
+          ? false
+          : user.acceptedPrivacyPolicy,
+        system_id: user.systemId,
       },
     });
 

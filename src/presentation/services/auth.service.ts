@@ -1,7 +1,11 @@
 import { Injectable } from '@nestjs/common';
 
 import { RegisterUserUseCase } from '../../app';
-import { ConflictError, RegisterUserInput } from '../../core';
+import {
+  ConflictError,
+  InvalidTermsPolicyError,
+  RegisterUserInput,
+} from '../../core';
 import { BadRequestException, ConflictException } from '../exceptions';
 
 @Injectable()
@@ -15,6 +19,10 @@ export class AuthService {
         throw new BadRequestException(newUser.value.message);
       } else if (newUser.value instanceof ConflictError) {
         throw new ConflictException(newUser.value.message);
+      } else if (newUser.value instanceof InvalidTermsPolicyError) {
+        throw new BadRequestException(
+          'You must accept the terms and privacy policy',
+        );
       } else {
         throw new BadRequestException('An unexpected error occurred');
       }

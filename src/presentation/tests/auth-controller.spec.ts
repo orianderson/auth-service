@@ -12,7 +12,9 @@ describe('AuthController', () => {
       register: jest.fn().mockResolvedValue({
         id: '1',
         email: 'test@email.com',
+        name: 'Test User',
         message: 'User created',
+        systemId: 'abcd-1234',
       }),
     };
 
@@ -26,8 +28,13 @@ describe('AuthController', () => {
 
   it('should register a user and return response', async () => {
     const dto: CreateUserDto = {
+      id: '1',
+      name: 'Test User',
       email: 'test@email.com',
       password: 'Abcdef1!',
+      acceptedTerms: true,
+      acceptedPrivacyPolicy: true,
+      systemId: 'abcd-1234',
     } as CreateUserDto;
 
     const result = await controller.registerUser(dto);
@@ -36,7 +43,9 @@ describe('AuthController', () => {
     expect(result).toEqual({
       id: '1',
       email: 'test@email.com',
+      name: 'Test User',
       message: 'User created',
+      systemId: 'abcd-1234',
     });
   });
 
@@ -47,6 +56,11 @@ describe('AuthController', () => {
     const dto: CreateUserDto = {
       email: 'fail@email.com',
       password: 'Abcdef1!',
+      name: 'Fail User',
+      id: '2',
+      acceptedTerms: true,
+      acceptedPrivacyPolicy: true,
+      systemId: 'fail-1234',
     } as CreateUserDto;
 
     await expect(controller.registerUser(dto)).rejects.toThrow(

@@ -1,6 +1,5 @@
 import { UserEntity, UserProps } from './user.entity';
 import { IBcryptService, IEmailValidatorService } from '../services';
-import { left } from '../helpers';
 import { InvalidEmailError, InvalidPasswordError } from '../errors';
 
 const mockBcryptService: IBcryptService = {
@@ -16,7 +15,15 @@ const mockEmailValidator: IEmailValidatorService = {
 
 describe('UserEntity', () => {
   it('deve criar usuário válido', async () => {
-    const props: UserProps = { email: 'test@email.com', password: 'Abc@1234' };
+    const props: UserProps = {
+      name: 'Eduardo e Mônica',
+      email: 'test@email.com',
+      password: 'Abc@1234',
+      id: '',
+      acceptedTerms: true,
+      acceptedPrivacyPolicy: true,
+      systemId: 'abcd-1234',
+    };
     const result = await UserEntity.create(
       props,
       mockEmailValidator,
@@ -30,7 +37,15 @@ describe('UserEntity', () => {
 
   it('deve falhar com email inválido', async () => {
     (mockEmailValidator.isEmailValid as jest.Mock).mockReturnValueOnce(false);
-    const props: UserProps = { email: 'invalid', password: 'Abc@1234' };
+    const props: UserProps = {
+      email: 'invalid',
+      password: 'Abc@1234',
+      name: 'Eduardo e Mônica',
+      id: '',
+      acceptedTerms: true,
+      acceptedPrivacyPolicy: true,
+      systemId: 'abcd-1234',
+    };
     const result = await UserEntity.create(
       props,
       mockEmailValidator,
@@ -43,7 +58,15 @@ describe('UserEntity', () => {
   });
 
   it('deve falhar com senha fraca', async () => {
-    const props: UserProps = { email: 'test@email.com', password: 'weak' };
+    const props: UserProps = {
+      name: 'Eduardo e Mônica',
+      id: '',
+      email: 'test@email.com',
+      password: 'weak',
+      acceptedTerms: true,
+      acceptedPrivacyPolicy: true,
+      systemId: 'abcd-1234',
+    };
     const result = await UserEntity.create(
       props,
       mockEmailValidator,
@@ -56,7 +79,13 @@ describe('UserEntity', () => {
   });
 
   it('deve validar credenciais corretamente', async () => {
-    const props: UserProps = { email: 'test@email.com', password: 'Abc@1234' };
+    const props: UserProps = {
+      name: 'Sebastião',
+      email: 'test@email.com',
+      password: 'Abc@1234',
+      id: '',
+      systemId: 'abcd-1234',
+    };
     const userResult = await UserEntity.create(
       props,
       mockEmailValidator,

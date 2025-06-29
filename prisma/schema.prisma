@@ -12,12 +12,15 @@ model User {
     email     String   @unique
     name      String
     password  String
+    termsAccepted Boolean @default(false)
+    privacyAccepted Boolean @default(false)
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
     system_id String
     system    System   @relation("UserSystem", fields: [system_id], references: [id])
     roles     UserRole[]
     // userModules UserModule[]
+    updateHistories UserUpdateHistory[]
 
     @@index([system_id])
 }
@@ -82,4 +85,14 @@ model RoleModule {
 
     @@index([role_id])
     @@index([module_id])
+}
+
+model UserUpdateHistory {
+    id          String   @id @default(uuid())
+    user_id     String
+    user        User     @relation(fields: [user_id], references: [id])
+    description String
+    updatedAt   DateTime @default(now())
+
+    @@index([user_id])
 }

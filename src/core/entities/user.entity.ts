@@ -1,14 +1,24 @@
 import { Either, left, right } from '../helpers';
-import { InvalidPasswordError, InvalidEmailError } from '../errors';
+import {
+  InvalidPasswordError,
+  InvalidEmailError,
+  InvalidTermsPolicyError,
+} from '../errors';
 import { IBcryptService, IEmailValidatorService } from '../services';
 
 export interface UserProps {
   id?: string;
   email: string;
+  name: string;
   password: string;
   createdAt?: Date;
   updatedAt?: Date;
+  acceptedTerms?: boolean;
+  acceptedPrivacyPolicy?: boolean;
+  systemId: string;
 }
+
+// TODO - Refactor this to separate the validation logic from the entity
 
 export class UserEntity {
   user: UserProps;
@@ -27,6 +37,10 @@ export class UserEntity {
     bcryptService: IBcryptService,
   ): Promise<Either<Error, UserEntity>> {
     const newUser = new UserEntity(data);
+
+    if (!newUser.verifyAcceptedTermsAndPrivacyPolicy()) {
+      return left(new InvalidTermsPolicyError());
+    }
 
     const validEmail = newUser.validateEmail(
       newUser.user.email,
@@ -87,6 +101,8 @@ export class UserEntity {
     const userObj = new UserEntity({
       email: user.email,
       password: user.password,
+      name: '',
+      systemId: user.systemId,
     });
     const hashPassword = await userObj.validatePassword(
       user.password,
@@ -109,5 +125,12 @@ export class UserEntity {
     bcryptService: IBcryptService,
   ): Promise<boolean> {
     return await bcryptService.compare(password, this.user.password);
+  }
+
+  private verifyAcceptedTermsAndPrivacyPolicy(): boolean {
+    if (this.user.acceptedTerms && this.user.acceptedPrivacyPolicy) {
+      return true;
+    }
+    return false;
   }
 }

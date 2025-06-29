@@ -52,7 +52,15 @@ describe('RegisterUserUseCase', () => {
       createdAt: new Date(),
     });
 
-    const input = { email: 'test@email.com', password: 'Senha@123' };
+    const input = {
+      name: 'Eduardo e Mônica',
+      id: '',
+      email: 'test@email.com',
+      password: 'Senha@123',
+      acceptedTerms: true,
+      acceptedPrivacyPolicy: true,
+      systemId: 'abcd-1234',
+    };
     const result = await useCase.execute(input);
 
     // Check that result is a success and has a user property
@@ -65,6 +73,7 @@ describe('RegisterUserUseCase', () => {
     userRepository.findByEmail.mockResolvedValue({
       id: '1',
       email: 'test@email.com',
+      name: '',
       password: 'hashed-password',
       createdAt: new Date(),
     });
@@ -72,6 +81,11 @@ describe('RegisterUserUseCase', () => {
     const result = await useCase.execute({
       email: 'test@email.com',
       password: 'Senha@123',
+      name: 'Eduardo e Mônica',
+      id: '1',
+      acceptedTerms: true,
+      acceptedPrivacyPolicy: true,
+      systemId: 'abcd-1234',
     });
 
     expect(result.isLeft()).toBe(true);

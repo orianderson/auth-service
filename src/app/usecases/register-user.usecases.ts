@@ -9,6 +9,7 @@ import {
   Either,
   left,
   right,
+  InvalidTermsPolicyError,
 } from '../../core';
 import {
   InvalidEmailError,
@@ -31,7 +32,8 @@ export class RegisterUserUseCase implements IRegisterUserUseCase {
       | InvalidEmailError
       | InvalidPasswordError
       | InvalidDataError
-      | ConflictError,
+      | ConflictError
+      | InvalidTermsPolicyError,
       RegisterUserOutput
     >
   > {
@@ -54,20 +56,29 @@ export class RegisterUserUseCase implements IRegisterUserUseCase {
       if (newUser.value instanceof InvalidPasswordError) {
         return left(new InvalidPasswordError());
       }
+      if (newUser.value instanceof InvalidTermsPolicyError) {
+        return left(new InvalidTermsPolicyError());
+      }
       return left(new InvalidDataError());
     }
 
     await this.userRepository.create({
       id: newUser.value.user.id,
       email: newUser.value.user.email,
+      name: newUser.value.user.name,
       password: newUser.value.user.password,
       createdAt: newUser.value.user.createdAt,
+      acceptedTerms: newUser.value.user.acceptedTerms,
+      acceptedPrivacyPolicy: newUser.value.user.acceptedPrivacyPolicy,
+      systemId: input.systemId,
     });
 
     return right({
       id: newUser.value.user.id,
       email: newUser.value.user.email,
+      name: newUser.value.user.name,
       createdAt: newUser.value.user.createdAt,
+      systemId: input.systemId,
     });
   }
 }

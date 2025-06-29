@@ -1,4 +1,10 @@
-import { IsEmail, Matches, IsString, IsNotEmpty } from 'class-validator';
+import {
+  IsEmail,
+  Matches,
+  IsString,
+  IsNotEmpty,
+  IsBoolean,
+} from 'class-validator';
 import { RegisterUserInput, RegisterUserOutput } from '../../core';
 
 export class CreateUserDto {
@@ -6,6 +12,10 @@ export class CreateUserDto {
   @IsEmail()
   @IsNotEmpty()
   email: string;
+
+  @IsString()
+  @IsNotEmpty()
+  name: string;
 
   @IsString()
   // @IsNotEmpty()
@@ -18,6 +28,18 @@ export class CreateUserDto {
   // )
   password: string;
 
+  @IsBoolean()
+  @IsNotEmpty()
+  acceptedTerms: boolean;
+
+  @IsBoolean()
+  @IsNotEmpty()
+  acceptedPrivacyPolicy: boolean;
+
+  @IsString()
+  @IsNotEmpty()
+  systemId: string;
+
   constructor(partial: Partial<RegisterUserInput>) {
     Object.assign(this, partial);
   }
@@ -26,6 +48,7 @@ export class CreateUserDto {
 export class CreateUserResponseDto {
   id?: string;
   email: string;
+  name: string;
   createdAt?: Date;
 
   constructor(partial: Partial<RegisterUserOutput>) {
