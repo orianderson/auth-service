@@ -60,6 +60,7 @@ describe('RegisterUserUseCase', () => {
       acceptedTerms: true,
       acceptedPrivacyPolicy: true,
       systemId: 'abcd-1234',
+      createdAt: new Date(),
     };
     const result = await useCase.execute(input);
 
@@ -71,21 +72,19 @@ describe('RegisterUserUseCase', () => {
   });
   it('deve lançar ConflictError se o usuário já existir', async () => {
     userRepository.findByEmail.mockResolvedValue({
+      email: 'test@gmail.com',
       id: '1',
-      email: 'test@email.com',
-      name: '',
-      password: 'hashed-password',
-      createdAt: new Date(),
     });
 
     const result = await useCase.execute({
-      email: 'test@email.com',
+      email: 'test@gmail.com',
       password: 'Senha@123',
       name: 'Eduardo e Mônica',
       id: '1',
       acceptedTerms: true,
       acceptedPrivacyPolicy: true,
       systemId: 'abcd-1234',
+      createdAt: new Date(),
     });
 
     expect(result.isLeft()).toBe(true);

@@ -5,7 +5,7 @@ import {
   IsNotEmpty,
   IsBoolean,
 } from 'class-validator';
-import { RegisterUserInput, RegisterUserOutput } from '../../core';
+import { RegisterUserOutput, UserProps } from '../../core';
 
 export class CreateUserDto {
   @IsString()
@@ -40,18 +40,19 @@ export class CreateUserDto {
   @IsNotEmpty()
   systemId: string;
 
-  constructor(partial: Partial<RegisterUserInput>) {
+  constructor(partial: Partial<UserProps>) {
     Object.assign(this, partial);
   }
 }
 
 export class CreateUserResponseDto {
-  id?: string;
+  id: string;
   email: string;
   name: string;
-  createdAt?: Date;
+  createdAt: Date;
+  systemId: string;
 
-  constructor(partial: Partial<RegisterUserOutput>) {
+  constructor(partial: Partial<UserProps>) {
     Object.assign(this, partial);
   }
 }

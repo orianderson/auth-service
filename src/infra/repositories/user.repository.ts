@@ -15,7 +15,9 @@ export class UserRepository implements IUserRepository {
     throw new Error('Method not implemented.');
   }
 
-  async findByEmail(email: string): Promise<Partial<UserProps> | null> {
+  async findByEmail(
+    email: string,
+  ): Promise<Pick<UserProps, 'email' | 'id'> | null> {
     const user = await this.userDatabase.user.findUnique({
       where: { email },
     });

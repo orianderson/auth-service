@@ -1,136 +1,57 @@
-import { Either, left, right } from '../helpers';
-import {
-  InvalidPasswordError,
-  InvalidEmailError,
-  InvalidTermsPolicyError,
-} from '../errors';
-import { IBcryptService, IEmailValidatorService } from '../services';
-
-export interface UserProps {
-  id?: string;
-  email: string;
-  name: string;
-  password: string;
-  createdAt?: Date;
-  updatedAt?: Date;
-  acceptedTerms?: boolean;
-  acceptedPrivacyPolicy?: boolean;
-  systemId: string;
-}
-
-// TODO - Refactor this to separate the validation logic from the entity
+import { UserProps } from './user-props';
 
 export class UserEntity {
-  user: UserProps;
+  private props: UserProps;
 
-  private constructor(user: UserProps) {
-    this.user = {
-      ...user,
-      email: user.email,
-      password: user.password,
-    };
+  constructor(props: UserProps) {
+    this.props = { ...props };
   }
 
-  static async create(
-    data: UserProps,
-    emailValidatorService: IEmailValidatorService,
-    bcryptService: IBcryptService,
-  ): Promise<Either<Error, UserEntity>> {
-    const newUser = new UserEntity(data);
-
-    if (!newUser.verifyAcceptedTermsAndPrivacyPolicy()) {
-      return left(new InvalidTermsPolicyError());
-    }
-
-    const validEmail = newUser.validateEmail(
-      newUser.user.email,
-      emailValidatorService,
-    );
-
-    if (validEmail.isLeft()) {
-      return left(new InvalidEmailError(newUser.user.email));
-    }
-
-    const validPassword = await newUser.validatePassword(
-      data.password,
-      bcryptService,
-    );
-
-    if (validPassword.isLeft()) {
-      return left(new InvalidPasswordError());
-    }
-
-    if (validPassword.isRight()) {
-      newUser.user.password = validPassword.value;
-    }
-    newUser.user.id = crypto.randomUUID();
-    newUser.user.createdAt = new Date();
-    return right(newUser);
+  get id() {
+    return this.props.id;
+  }
+  get email() {
+    return this.props.email;
+  }
+  get name() {
+    return this.props.name;
+  }
+  get acceptedTerms() {
+    return this.props.acceptedTerms;
+  }
+  get acceptedPrivacyPolicy() {
+    return this.props.acceptedPrivacyPolicy;
+  }
+  get createdAt() {
+    return this.props.createdAt;
+  }
+  get updatedAt() {
+    return this.props.updatedAt;
   }
 
-  private validateEmail(
-    email: string,
-    emailValidator: IEmailValidatorService,
-  ): Either<InvalidEmailError, string> {
-    if (!emailValidator.isEmailValid(email)) {
-      return left(new InvalidEmailError(email));
-    }
-
-    return right(email);
+  setPassword(hash: string) {
+    this.props.password = hash;
+    this.props.updatedAt = new Date();
   }
 
-  private async validatePassword(
-    password: string,
-    bcryptService: IBcryptService,
-  ): Promise<Either<InvalidPasswordError, string>> {
-    const STRONG_PASSWORD_REGEX =
-      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
-
-    if (!STRONG_PASSWORD_REGEX.test(password)) {
-      return left(new InvalidPasswordError());
-    }
-
-    const hashPassword = await bcryptService.hash(password);
-    return right(hashPassword);
+  acceptTermsAndPrivacy() {
+    this.props.acceptedTerms = true;
+    this.props.acceptedPrivacyPolicy = true;
+    this.props.updatedAt = new Date();
   }
 
-  static async updatePassword(
-    user: UserProps,
-    bcryptService: IBcryptService,
-  ): Promise<Either<InvalidPasswordError, UserEntity>> {
-    const userObj = new UserEntity({
-      email: user.email,
-      password: user.password,
-      name: '',
-      systemId: user.systemId,
-    });
-    const hashPassword = await userObj.validatePassword(
-      user.password,
-      bcryptService,
-    );
-
-    if (hashPassword.isLeft()) {
-      return left(new InvalidPasswordError());
-    }
-    if (hashPassword.isRight()) {
-      userObj.user.password = hashPassword.value;
-      userObj.user.updatedAt = new Date();
-    }
-
-    return right(userObj);
+  getPasswordForPersistence() {
+    return this.props.password;
   }
 
-  public async validateCredentials(
-    password: string,
-    bcryptService: IBcryptService,
-  ): Promise<boolean> {
-    return await bcryptService.compare(password, this.user.password);
-  }
-
-  private verifyAcceptedTermsAndPrivacyPolicy(): boolean {
-    if (this.user.acceptedTerms && this.user.acceptedPrivacyPolicy) {
-      return true;
-    }
-    return false;
+  toJSON() {
+    const {
+      password,
+      acceptedPrivacyPolicy,
+      acceptedTerms,
+      updatedAt,
+      ...rest
+    } = this.props;
+    return rest;
   }
 }

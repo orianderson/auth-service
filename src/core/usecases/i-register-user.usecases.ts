@@ -6,10 +6,11 @@ import {
   InvalidTermsPolicyError,
 } from '../errors';
 import { Either } from '../helpers';
+import { UserProps } from '../entities';
 
 export interface IRegisterUserUseCase {
   execute(
-    input: RegisterUserInput,
+    input: UserProps,
   ): Promise<
     Either<
       | InvalidEmailError
@@ -22,20 +23,10 @@ export interface IRegisterUserUseCase {
   >;
 }
 
-export type RegisterUserInput = {
-  id?: string;
-  email: string;
-  password: string;
-  name: string;
-  acceptedTerms?: boolean;
-  acceptedPrivacyPolicy?: boolean;
-  systemId: string;
-};
-
 export type RegisterUserOutput = {
-  id?: string;
+  id: string;
   email: string;
   name: string;
-  createdAt?: Date;
-  systemId?: string;
+  createdAt: Date;
+  systemId: string;
 };

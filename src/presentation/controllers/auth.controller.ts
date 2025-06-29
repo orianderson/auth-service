@@ -8,14 +8,22 @@ import { StatusResponse } from '../../app';
 @Controller('auth')
 @ApiTags('auth')
 export class AuthController {
-  constructor(readonly authService: AuthService) {}
+  constructor(private readonly authService: AuthService) {}
 
+  /**
+   * Handles user registration.
+   * @param createUserDto - Data for creating a new user.
+   * @returns The created user's response DTO.
+   */
   @Post('register')
   @HttpCode(StatusResponse.CREATED.statusCode)
   async registerUser(
     @Body() createUserDto: CreateUserDto,
   ): Promise<CreateUserResponseDto> {
-    const user = await this.authService.register(createUserDto);
-    return user;
+    return this.authService.register({
+      ...createUserDto,
+      id: '',
+      createdAt: new Date(),
+    });
   }
 }

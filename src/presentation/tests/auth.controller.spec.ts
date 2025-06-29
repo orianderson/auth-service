@@ -2,7 +2,6 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { AuthController } from '../controllers/auth.controller';
 import { AuthService } from '../services/auth.service';
 import { CreateUserDto, CreateUserResponseDto } from '../dtos';
-import { StatusResponse } from '../../app/constants/status-response';
 import {
   BadRequestException,
   ConflictException,
@@ -41,6 +40,8 @@ describe('AuthController', () => {
       id: 'user-id-1',
       email: 'test@example.com',
       createdAt: new Date(),
+      name: 'Test User',
+      systemId: 'system-id-1',
     });
     authService.register.mockResolvedValue(response);
 
@@ -56,6 +57,8 @@ describe('AuthController', () => {
       name: 'Test User',
       acceptedTerms: true,
       acceptedPrivacyPolicy: true,
+      systemId: 'system-id-123',
+      createdAt: new Date(),
     });
     const response = {
       id: 'abc123',
@@ -63,6 +66,7 @@ describe('AuthController', () => {
       name: 'Test User',
       createdAt: new Date(),
       extraField: 'should not be here',
+      systemId: 'system-id-123',
     };
     authService.register.mockResolvedValue(response);
 
