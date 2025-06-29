@@ -3,8 +3,8 @@ import {
   IBcryptService,
   IEmailValidatorService,
   IUserRepository,
+  ConflictError,
 } from '../../../core';
-import { ConflictException, BadRequestException } from '../../helpers';
 
 describe('RegisterUserUseCase', () => {
   let useCase: RegisterUserUseCase;
@@ -61,8 +61,7 @@ describe('RegisterUserUseCase', () => {
       expect(result.value.user).toHaveProperty('email', input.email);
     }
   });
-
-  it('deve lançar ConflictException se o usuário já existir', async () => {
+  it('deve lançar ConflictError se o usuário já existir', async () => {
     userRepository.findByEmail.mockResolvedValue({
       id: '1',
       email: 'test@email.com',
@@ -70,8 +69,12 @@ describe('RegisterUserUseCase', () => {
       createdAt: new Date(),
     });
 
-    await expect(
-      useCase.execute({ email: 'test@email.com', password: 'Senha@123' }),
-    ).rejects.toThrow(ConflictException);
+    const result = await useCase.execute({
+      email: 'test@email.com',
+      password: 'Senha@123',
+    });
+
+    expect(result.isLeft()).toBe(true);
+    expect(result.value).toBeInstanceOf(ConflictError);
   });
 });

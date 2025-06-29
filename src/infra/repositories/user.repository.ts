@@ -30,8 +30,20 @@ export class UserRepository implements IUserRepository {
     };
   }
 
-  create(user: UserProps): Promise<UserProps> {
-    throw new Error('Method not implemented.');
+  async create(user: UserProps): Promise<Partial<UserProps>> {
+    const newUser = await this.userDatabase.user.create({
+      data: {
+        email: user.email,
+        password: user.password,
+        createdAt: user.createdAt,
+        id: user.id,
+      },
+    });
+
+    return {
+      id: newUser.id,
+      email: newUser.email,
+    };
   }
   update(user: UserProps): Promise<UserProps> {
     throw new Error('Method not implemented.');

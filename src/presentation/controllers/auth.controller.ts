@@ -5,8 +5,6 @@ import { AuthService } from '../services/auth.service';
 import { CreateUserDto, CreateUserResponseDto } from '../dtos';
 import { StatusResponse } from '../../app';
 
-// TODO - Improvement Exceptions Filter
-
 @Controller('auth')
 @ApiTags('auth')
 export class AuthController {

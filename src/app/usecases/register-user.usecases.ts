@@ -10,13 +10,12 @@ import {
   left,
   right,
 } from '../../core';
-import { ConflictException } from '../helpers/conflict-exceptions';
 import {
   InvalidEmailError,
   InvalidPasswordError,
   InvalidDataError,
+  ConflictError,
 } from '../../core';
-import { BadRequestException } from '../helpers';
 
 export class RegisterUserUseCase implements IRegisterUserUseCase {
   constructor(
@@ -29,16 +28,17 @@ export class RegisterUserUseCase implements IRegisterUserUseCase {
     input: RegisterUserInput,
   ): Promise<
     Either<
-      InvalidEmailError | InvalidPasswordError | InvalidDataError,
+      | InvalidEmailError
+      | InvalidPasswordError
+      | InvalidDataError
+      | ConflictError,
       RegisterUserOutput
     >
   > {
     const isUser = await this.userRepository.findByEmail(input.email);
 
     if (isUser) {
-      throw new ConflictException({
-        message: 'User already exists',
-      });
+      return left(new ConflictError());
     }
 
     const newUser = await UserEntity.create(

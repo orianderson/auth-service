@@ -1,0 +1,47 @@
+@startuml RegisterUserUseCase
+
+interface IRegisterUserUseCase
+interface IBcryptService
+interface IEmailValidatorService
+interface IUserRepository
+
+class RegisterUserInput
+class RegisterUserOutput
+
+class UserEntity {
+  +static create(input, emailValidator, bcrypt)
+}
+
+class ConflictException
+class BadRequestException
+
+class InvalidEmailError
+class InvalidPasswordError
+class InvalidDataError
+
+class Either
+class left
+class right
+
+class RegisterUserUseCase {
+  - bcrypt: IBcryptService
+  - emailValidator: IEmailValidatorService
+  - userRepository: IUserRepository
+  + execute(input: RegisterUserInput): Promise<Either<InvalidEmailError | InvalidPasswordError | InvalidDataError, RegisterUserOutput>>
+}
+
+RegisterUserUseCase ..|> IRegisterUserUseCase
+RegisterUserUseCase --> IBcryptService
+RegisterUserUseCase --> IEmailValidatorService
+RegisterUserUseCase --> IUserRepository
+RegisterUserUseCase --> UserEntity
+RegisterUserUseCase --> ConflictException
+RegisterUserUseCase --> BadRequestException
+RegisterUserUseCase --> InvalidEmailError
+RegisterUserUseCase --> InvalidPasswordError
+RegisterUserUseCase --> InvalidDataError
+RegisterUserUseCase --> Either
+RegisterUserUseCase --> left
+RegisterUserUseCase --> right
+
+@enduml

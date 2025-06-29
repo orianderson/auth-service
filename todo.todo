@@ -18,3 +18,7 @@ export class UserFactory {
     return new User(dto.username, dto.email, dto.password);
   }
 }
+
+User: {
+  email, password, createdAt, updatedAt, name
+}

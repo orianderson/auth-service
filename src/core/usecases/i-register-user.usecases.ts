@@ -2,6 +2,7 @@ import {
   InvalidDataError,
   InvalidEmailError,
   InvalidPasswordError,
+  ConflictError,
 } from '../errors';
 import { Either } from '../helpers';
 
@@ -10,7 +11,10 @@ export interface IRegisterUserUseCase {
     input: RegisterUserInput,
   ): Promise<
     Either<
-      InvalidEmailError | InvalidPasswordError | InvalidDataError,
+      | InvalidEmailError
+      | InvalidPasswordError
+      | InvalidDataError
+      | ConflictError,
       RegisterUserOutput
     >
   >;
