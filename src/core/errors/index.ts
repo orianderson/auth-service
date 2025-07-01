@@ -3,3 +3,6 @@ export * from './invalid-email.error';
 export * from './invalid-data.error';
 export * from './conflict.error';
 export * from './invalid-terms-policy.error';
+export * from './user-not-found.error';
+export * from './expired-token.error';
+export * from './invalid-signature.error';
