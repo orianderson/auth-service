@@ -16,6 +16,20 @@
     "forceConsistentCasingInFileNames": true,
     "noImplicitAny": false,
     "strictBindCallApply": false,
-    "noFallthroughCasesInSwitch": false
+    "noFallthroughCasesInSwitch": false,
+    "paths": {
+      "@core/*": [
+        "./src/core/*"
+      ],
+      "@app/*": [
+        "./src/app/*"
+      ],
+      "@infra/*": [
+        "./src/infra/*"
+      ],
+      "@shared/*": [
+        "./src/shared/*"
+      ]
+    }
   }
 }

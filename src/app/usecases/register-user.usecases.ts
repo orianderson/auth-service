@@ -78,6 +78,7 @@ export class RegisterUserUseCase implements IRegisterUserUseCase {
       acceptedTerms: userEntity.acceptedTerms,
       acceptedPrivacyPolicy: userEntity.acceptedPrivacyPolicy,
       systemId: input.systemId,
+      roleId: userEntity.roleId,
     });
 
     // Return the registration output

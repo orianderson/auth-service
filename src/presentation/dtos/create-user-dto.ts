@@ -40,6 +40,10 @@ export class CreateUserDto {
   @IsNotEmpty()
   systemId: string;
 
+  @IsString()
+  @IsNotEmpty()
+  roleId: string;
+
   constructor(partial: Partial<UserProps>) {
     Object.assign(this, partial);
   }

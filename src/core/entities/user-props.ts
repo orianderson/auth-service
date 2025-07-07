@@ -8,10 +8,14 @@ export interface UserProps {
   acceptedTerms: boolean;
   acceptedPrivacyPolicy: boolean;
   systemId: string;
+  roleId: string;
 }
 
 // Para criação de usuário (quase todos os campos)
-export type CreateUserProps = Omit<UserProps, 'id' | 'createdAt' | 'updatedAt'>;
+export type CreateUserProps = Omit<
+  UserProps,
+  'id' | 'createdAt' | 'updatedAt' | 'roleid'
+>;
 
 // Para atualização de senha (apenas email e senha)
 export type UpdatePasswordProps = Pick<UserProps, 'email' | 'password'>;

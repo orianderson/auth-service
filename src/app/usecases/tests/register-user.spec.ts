@@ -50,6 +50,7 @@ describe('RegisterUserUseCase', () => {
       email: 'anderson@gmail.com',
       password: 'hashed-password',
       createdAt: new Date(),
+      roleId: 'abcd-12345',
     });
 
     const input = {
@@ -61,6 +62,7 @@ describe('RegisterUserUseCase', () => {
       acceptedPrivacyPolicy: true,
       systemId: 'abcd-1234',
       createdAt: new Date(),
+      roleId: 'abdc-1234',
     };
     const result = await useCase.execute(input);
 
@@ -74,6 +76,7 @@ describe('RegisterUserUseCase', () => {
     userRepository.findByEmail.mockResolvedValue({
       email: 'test@gmail.com',
       id: '1',
+      systemId: 'abcd-1234',
     });
 
     const result = await useCase.execute({
@@ -85,6 +88,7 @@ describe('RegisterUserUseCase', () => {
       acceptedPrivacyPolicy: true,
       systemId: 'abcd-1234',
       createdAt: new Date(),
+      roleId: 'abcd-1234',
     });
 
     expect(result.isLeft()).toBe(true);

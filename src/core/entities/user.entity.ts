@@ -28,6 +28,9 @@ export class UserEntity {
   get updatedAt() {
     return this.props.updatedAt;
   }
+  get roleId() {
+    return this.props.roleId;
+  }
 
   setPassword(hash: string) {
     this.props.password = hash;

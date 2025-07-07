@@ -11,6 +11,7 @@ describe('UserEntity', () => {
     acceptedTerms: false,
     acceptedPrivacyPolicy: false,
     systemId: 'system-xyz',
+    roleId: 'abcd-1234',
   };
 
   it('should_return_correct_properties_after_instantiation', () => {
@@ -60,9 +61,8 @@ describe('UserEntity', () => {
       email: baseProps.email,
       name: baseProps.name,
       createdAt: baseProps.createdAt,
-      acceptedTerms: baseProps.acceptedTerms,
-      acceptedPrivacyPolicy: baseProps.acceptedPrivacyPolicy,
       systemId: baseProps.systemId,
+      roleId: 'abcd-1234',
     });
   });
 

@@ -7,6 +7,8 @@
 [x] - E-mail válido
 [x] - Senha forte (regex + hash)
 [ ] - Confirmação por e-mail (double opt-in)
+[ ] - Alteração periódica de Senha
+[ ] - Autenticação por dois fatores
 
 * DTO - Data Transfer Object
 

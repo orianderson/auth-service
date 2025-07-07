@@ -37,6 +37,7 @@ export class UserDomainService {
       password: hashedPassword,
       createdAt: new Date(),
       updatedAt: undefined,
+      roleId: data.roleId,
     });
 
     return right(user);

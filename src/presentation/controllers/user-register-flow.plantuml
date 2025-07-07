@@ -13,3 +13,5 @@ AuthService --> AuthController : CreateUserResponseDto
 AuthController --> Cliente : HTTP 201 + dados do usuário
 
 @enduml
+
+' TODO - Confirmação de e-mail (Microservice de e-mail)
