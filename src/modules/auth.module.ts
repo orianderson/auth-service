@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 
 import { AuthService } from '../presentation/services/auth.service';
 import { RegisterUserUseCase } from '../app/usecases';
+import { EmailService } from '@infra/services';
 
 import {
   BcryptService,
@@ -23,6 +24,7 @@ import { DatabaseModule } from './database.module';
   controllers: [AuthController],
   providers: [
     AuthService,
+    EmailService,
     {
       provide: RegisterUserUseCase,
       useFactory: (
@@ -47,6 +49,6 @@ import { DatabaseModule } from './database.module';
     EmailValidatorService,
     UserRepository,
   ],
-  exports: [AuthService],
+  exports: [AuthService, EmailService],
 })
 export class AuthModule {}
