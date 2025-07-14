@@ -5,9 +5,15 @@ import { ConflictError, InvalidTermsPolicyError, UserProps } from '../../core';
 import { BadRequestException, ConflictException } from '../exceptions';
 import { CreateUserResponseDto } from '../dtos';
 
+import { EmailService, EmailTemplate } from '@infra/services';
+
 @Injectable()
 export class AuthService {
-  constructor(private readonly registerUserUseCase: RegisterUserUseCase) {}
+  constructor(
+    private readonly registerUserUseCase: RegisterUserUseCase,
+    private readonly emailService: EmailService,
+    private readonly emailTemplate: EmailTemplate,
+  ) {}
 
   /**
    * Registers a new user and handles domain errors by mapping them to HTTP exceptions.
@@ -19,6 +25,11 @@ export class AuthService {
     const newUser = await this.registerUserUseCase.execute(user);
 
     if (!newUser.isLeft()) {
+      await this.emailService.sendEmail({
+        to: newUser.value.email,
+        subject: 'Welcome to Our Service',
+        html: this.emailTemplate.confirmEmailTemplate(newUser.value.name),
+      });
       return newUser.value;
     }
 

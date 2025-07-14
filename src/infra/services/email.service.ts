@@ -20,12 +20,13 @@ export class EmailService implements IEmailService {
   private transporter: nodemailer.Transporter;
 
   async sendEmail(emailOptions: EmailOptions): Promise<void> {
-    const { to, subject, text } = emailOptions;
+    const { to, subject, text, html } = emailOptions;
     await this.transporter.sendMail({
       from: this.configService.get('SMTP_FROM'),
       to,
       subject,
       text,
+      html,
     });
   }
 }

@@ -9,6 +9,7 @@ import {
   EmailValidatorService,
   PrismaService,
   UserRepository,
+  EmailTemplate,
 } from '../infra';
 import {
   IBcryptService,
@@ -25,6 +26,7 @@ import { DatabaseModule } from './database.module';
   providers: [
     AuthService,
     EmailService,
+    EmailTemplate,
     {
       provide: RegisterUserUseCase,
       useFactory: (
