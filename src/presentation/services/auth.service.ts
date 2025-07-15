@@ -1,7 +1,12 @@
 import { Injectable } from '@nestjs/common';
 
-import { RegisterUserUseCase } from '../../app';
-import { ConflictError, InvalidTermsPolicyError, UserProps } from '../../core';
+import { RegisterUserUseCase, VerifyEmailUseCase } from '../../app';
+import {
+  ConflictError,
+  InvalidTermsPolicyError,
+  InvalidTokenError,
+  UserProps,
+} from '../../core';
 import { BadRequestException, ConflictException } from '../exceptions';
 import { CreateUserResponseDto } from '../dtos';
 
@@ -13,6 +18,7 @@ export class AuthService {
     private readonly registerUserUseCase: RegisterUserUseCase,
     private readonly emailService: EmailService,
     private readonly emailTemplate: EmailTemplate,
+    private readonly verifyEmailUsecases: VerifyEmailUseCase,
   ) {}
 
   /**
@@ -53,5 +59,19 @@ export class AuthService {
     }
 
     throw new BadRequestException('An unexpected error occurred');
+  }
+
+  async confirmUserEmail(id: string, token: string): Promise<boolean> {
+    const result = await this.verifyEmailUsecases.execute(id, token);
+
+    if (result.isLeft()) {
+      const error = result.value;
+      if (error instanceof InvalidTokenError) {
+        throw new BadRequestException('Invalid or expired token');
+      }
+      throw new BadRequestException('An unexpected error occurred');
+    }
+
+    return result.value;
   }
 }
