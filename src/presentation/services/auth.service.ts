@@ -28,9 +28,14 @@ export class AuthService {
       await this.emailService.sendEmail({
         to: newUser.value.email,
         subject: 'Welcome to Our Service',
-        html: this.emailTemplate.confirmEmailTemplate(newUser.value.name),
+        html: this.emailTemplate.confirmEmailTemplate(
+          newUser.value.name,
+          newUser.value.emailVerificationToken,
+        ),
       });
-      return newUser.value;
+
+      const { emailVerificationToken, ...rest } = newUser.value;
+      return rest;
     }
 
     const { value: error } = newUser;

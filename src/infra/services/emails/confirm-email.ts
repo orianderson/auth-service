@@ -1,4 +1,4 @@
-export const confirmEmail = (name: string, link?: string): string => `
+export const confirmEmail = (name: string, token?: string): string => `
     <!DOCTYPE html>
 <html lang="pt-BR">
   <head>
@@ -71,8 +71,7 @@ export const confirmEmail = (name: string, link?: string): string => `
                         text-align: center;
                       "
                     >
-                      <a
-                        href="[Link de Confirmação]"
+                      <button
                         style="
                           display: inline-block;
                           padding: 12px 24px;
@@ -80,8 +79,9 @@ export const confirmEmail = (name: string, link?: string): string => `
                           text-decoration: none;
                           font-weight: 500;
                           font-size: 16px;
+                          background-color: #1fb8cd;
                         "
-                        >Confirmar E-mail</a
+                        >${token}</button
                       >
                     </td>
                   </tr>

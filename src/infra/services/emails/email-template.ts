@@ -7,7 +7,7 @@ import { confirmEmail } from './confirm-email';
 
 @Injectable()
 export class EmailTemplate implements IEmailTemplateService {
-  public confirmEmailTemplate(name: string, link?: string): string {
-    return confirmEmail(name, link);
+  public confirmEmailTemplate(name: string, token?: string): string {
+    return confirmEmail(name, token);
   }
 }

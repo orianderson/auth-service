@@ -7,15 +7,13 @@ export interface UserProps {
   updatedAt?: Date;
   acceptedTerms: boolean;
   acceptedPrivacyPolicy: boolean;
+  emailVerificationToken?: string;
   systemId: string;
   roleId: string;
 }
 
 // Para criação de usuário (quase todos os campos)
-export type CreateUserProps = Omit<
-  UserProps,
-  'id' | 'createdAt' | 'updatedAt' | 'roleid'
->;
+export type CreateUserProps = Omit<UserProps, 'id' | 'createdAt' | 'updatedAt'>;
 
 // Para atualização de senha (apenas email e senha)
 export type UpdatePasswordProps = Pick<UserProps, 'email' | 'password'>;

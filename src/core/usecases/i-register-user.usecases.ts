@@ -29,4 +29,5 @@ export type RegisterUserOutput = {
   name: string;
   createdAt: Date;
   systemId: string;
+  emailVerificationToken?: string;
 };

@@ -38,6 +38,7 @@ export class UserDomainService {
       createdAt: new Date(),
       updatedAt: undefined,
       roleId: data.roleId,
+      emailVerificationToken: data.emailVerificationToken,
     });
 
     return right(user);

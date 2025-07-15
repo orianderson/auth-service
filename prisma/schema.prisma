@@ -7,20 +7,24 @@ datasource db {
     url          = env("DATABASE_URL")
     relationMode = "foreignKeys"
 }
+
 model User {
-    id        String   @id @default(uuid())
-    email     String   @unique
-    name      String
-    password  String
-    termsAccepted Boolean @default(false)
-    privacyAccepted Boolean @default(false)
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
-    system_id String
-    system    System   @relation("UserSystem", fields: [system_id], references: [id])
-    roles     UserRole[]
+    id                              String              @id @default(uuid())
+    email                           String              @unique
+    name                            String
+    password                        String
+    termsAccepted                   Boolean             @default(false)
+    privacyAccepted                 Boolean             @default(false)
+    emailVerified                   Boolean             @default(false)
+    emailVerificationToken          String?             @unique
+    emailVerificationTokenExpiresAt DateTime?
+    createdAt                       DateTime            @default(now())
+    updatedAt                       DateTime            @updatedAt
+    system_id                       String
+    system                          System              @relation("UserSystem", fields: [system_id], references: [id])
+    roles                           UserRole[]
     // userModules UserModule[]
-    updateHistories UserUpdateHistory[]
+    updateHistories                 UserUpdateHistory[]
 
     @@index([system_id])
 }
@@ -37,36 +41,38 @@ model System {
 }
 
 model Role {
-    id          String   @id @default(uuid())
+    id          String       @id @default(uuid())
     name        String
     description String
-    createdAt   DateTime @default(now())
+    createdAt   DateTime     @default(now())
     system_id   String
     // system      System   @relation(fields: [system_id], references: [id])
     userRoles   UserRole[]
-    system      System   @relation("SystemRole", fields: [system_id], references: [id])
+    system      System       @relation("SystemRole", fields: [system_id], references: [id])
     roleModules RoleModule[]
 
     @@index([system_id])
 }
+
 model Module {
-    id          String   @id @default(uuid())
+    id          String       @id @default(uuid())
     name        String
     description String
-    createdAt   DateTime @default(now())
-    updatedAt   DateTime @updatedAt
+    createdAt   DateTime     @default(now())
+    updatedAt   DateTime     @updatedAt
     system_id   String
-    system      System   @relation("SystemModule", fields: [system_id], references: [id])
+    system      System       @relation("SystemModule", fields: [system_id], references: [id])
     roleModules RoleModule[]
 
     @@index([system_id])
 }
+
 model UserRole {
-    id      String @id @default(uuid())
-    user_id String
-    user    User   @relation(fields: [user_id], references: [id])
-    role_id String
-    role    Role   @relation(fields: [role_id], references: [id])
+    id        String   @id @default(uuid())
+    user_id   String
+    user      User     @relation(fields: [user_id], references: [id])
+    role_id   String
+    role      Role     @relation(fields: [role_id], references: [id])
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
 
@@ -75,11 +81,11 @@ model UserRole {
 }
 
 model RoleModule {
-    id        String @id @default(uuid())
+    id        String   @id @default(uuid())
     role_id   String
-    role      Role   @relation(fields: [role_id], references: [id])
+    role      Role     @relation(fields: [role_id], references: [id])
     module_id String
-    module    Module @relation(fields: [module_id], references: [id])
+    module    Module   @relation(fields: [module_id], references: [id])
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
 

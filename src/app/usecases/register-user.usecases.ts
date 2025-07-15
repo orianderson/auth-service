@@ -69,7 +69,7 @@ export class RegisterUserUseCase implements IRegisterUserUseCase {
     const userEntity = newUser.value;
 
     // Persist the new user
-    await this.userRepository.create({
+    const createdUSer = await this.userRepository.create({
       id: userEntity.id,
       email: userEntity.email,
       name: userEntity.name,
@@ -82,6 +82,9 @@ export class RegisterUserUseCase implements IRegisterUserUseCase {
     });
 
     // Return the registration output
-    return right(userEntity.toJSON());
+    return right({
+      ...userEntity.toJSON(),
+      emailVerificationToken: createdUSer.emailVerificationToken,
+    });
   }
 }

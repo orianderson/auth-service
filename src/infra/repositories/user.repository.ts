@@ -3,6 +3,8 @@ import { Injectable } from '@nestjs/common';
 import { IUserRepository, UserProps } from 'src/core';
 import { PrismaService } from '../database';
 
+import { generateToken } from '@shared/utils';
+
 @Injectable()
 export class UserRepository implements IUserRepository {
   userDatabase: PrismaService;
@@ -64,6 +66,7 @@ export class UserRepository implements IUserRepository {
         privacyAccepted: !user.acceptedPrivacyPolicy
           ? false
           : user.acceptedPrivacyPolicy,
+        emailVerificationToken: generateToken(),
         system_id: user.systemId,
       },
     });
@@ -75,9 +78,12 @@ export class UserRepository implements IUserRepository {
       },
     });
 
+    console.log(newUser);
+
     return {
       id: newUser.id,
       email: newUser.email,
+      emailVerificationToken: newUser.emailVerificationToken || undefined,
     };
   }
   update(user: UserProps): Promise<UserProps> {
