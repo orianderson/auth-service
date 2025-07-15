@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 
 import { AuthService } from '../presentation/services/auth.service';
-import { RegisterUserUseCase } from '../app/usecases';
+import { RegisterUserUseCase, VerifyEmailUseCase } from '../app/usecases';
 import { EmailService } from '@infra/services';
 
 import {
@@ -35,6 +35,12 @@ import { DatabaseModule } from './database.module';
         userRepository: IUserRepository,
       ) => new RegisterUserUseCase(bcrypt, emailValidator, userRepository),
       inject: ['IBcryptService', 'IEmailValidatorService', 'IUserRepository'],
+    },
+    {
+      provide: VerifyEmailUseCase,
+      useFactory: (userRepository: IUserRepository) =>
+        new VerifyEmailUseCase(userRepository),
+      inject: ['IUserRepository'],
     },
     {
       provide: UserRepository,

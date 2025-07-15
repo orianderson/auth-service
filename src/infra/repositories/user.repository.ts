@@ -67,6 +67,7 @@ export class UserRepository implements IUserRepository {
           ? false
           : user.acceptedPrivacyPolicy,
         emailVerificationToken: generateToken(),
+        emailVerificationTokenExpiresAt: new Date(Date.now() + 15 * 60 * 1000), // 15 minutes
         system_id: user.systemId,
       },
     });
@@ -78,18 +79,51 @@ export class UserRepository implements IUserRepository {
       },
     });
 
-    console.log(newUser);
-
     return {
       id: newUser.id,
       email: newUser.email,
       emailVerificationToken: newUser.emailVerificationToken || undefined,
     };
   }
-  update(user: UserProps): Promise<UserProps> {
-    throw new Error('Method not implemented.');
+  async update(user: Partial<UserProps>, description: string): Promise<void> {
+    await this.userDatabase.user.update({
+      where: { id: user.id },
+      data: {
+        ...user,
+        updatedAt: new Date(),
+      },
+    });
+
+    if (user.id) {
+      await this.userDatabase.userUpdateHistory.create({
+        data: {
+          user_id: user.id,
+          description: description,
+          updatedAt: new Date(),
+        },
+      });
+    }
   }
+
   delete(id: string): Promise<void> {
     throw new Error('Method not implemented.');
+  }
+
+  async confirmEmail(id: string): Promise<{
+    emailVerificationToken: string;
+    emailVerificationTokenExpiresAt: Date;
+  } | null> {
+    const user = (await this.userDatabase.user.findUnique({
+      where: { id },
+      select: {
+        emailVerificationToken: true,
+        emailVerificationTokenExpiresAt: true,
+      },
+    })) as {
+      emailVerificationToken: string;
+      emailVerificationTokenExpiresAt: Date;
+    } | null;
+
+    return user;
   }
 }

@@ -7,7 +7,9 @@ export interface UserProps {
   updatedAt?: Date;
   acceptedTerms: boolean;
   acceptedPrivacyPolicy: boolean;
+  emailVerified?: boolean;
   emailVerificationToken?: string;
+  emailVerificationTokenExpiresAt?: Date;
   systemId: string;
   roleId: string;
 }

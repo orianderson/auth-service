@@ -28,6 +28,7 @@ describe('RegisterUserUseCase', () => {
     findById: jest.fn(),
     update: jest.fn(),
     delete: jest.fn(),
+    confirmEmail: jest.fn(),
   };
 
   beforeEach(() => {
