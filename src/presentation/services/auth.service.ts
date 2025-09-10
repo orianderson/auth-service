@@ -1,10 +1,15 @@
 import { Injectable } from '@nestjs/common';
 
-import { RegisterUserUseCase, VerifyEmailUseCase } from '../../app';
+import {
+  RecoveryPasswordUseCase,
+  RegisterUserUseCase,
+  VerifyEmailUseCase,
+} from '../../app';
 import {
   ConflictError,
   InvalidTermsPolicyError,
   InvalidTokenError,
+  UserNotFoundError,
   UserProps,
 } from '../../core';
 import { BadRequestException, ConflictException } from '../exceptions';
@@ -19,6 +24,7 @@ export class AuthService {
     private readonly emailService: EmailService,
     private readonly emailTemplate: EmailTemplate,
     private readonly verifyEmailUsecases: VerifyEmailUseCase,
+    private readonly recoveryPasswordUsecases: RecoveryPasswordUseCase,
   ) {}
 
   /**

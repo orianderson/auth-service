@@ -55,7 +55,6 @@ export class CreateUserResponseDto {
   name: string;
   createdAt: Date;
   systemId: string;
-  emailVerificationToken?: string;
 
   constructor(partial: Partial<UserProps>) {
     Object.assign(this, partial);

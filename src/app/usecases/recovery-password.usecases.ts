@@ -17,18 +17,12 @@ export class RecoveryPasswordUseCase implements IRecoveryPasswordUseCase {
    */
   async execute(
     email: string,
-  ): Promise<Either<UserNotFoundError, { message: string }>> {
+  ): Promise<Either<UserNotFoundError, { name: string; token?: string }>> {
     const user = await this.userRepository.findByEmail(email);
     if (!user) {
       return left(new UserNotFoundError());
     }
 
-    // Gera token de recuperação
-    // const token = await this.recoveryTokenService.generate(user.id);
-
-    // Envia e-mail com instruções de recuperação
-    // await this.emailService.sendRecoveryEmail(user.email, token);
-
-    return right({ message: 'Recovery e-mail send succession' });
+    return right({ name: user.name, token: user.emailVerificationToken });
   }
 }

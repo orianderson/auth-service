@@ -1,8 +1,12 @@
 import { Module } from '@nestjs/common';
 
-import { AuthService } from '../presentation/services/auth.service';
-import { RegisterUserUseCase, VerifyEmailUseCase } from '../app/usecases';
-import { EmailService } from '@infra/services';
+import { AuthService, UpdateService } from '../presentation/services';
+import {
+  RegisterUserUseCase,
+  VerifyEmailUseCase,
+  RecoveryPasswordUseCase,
+} from '../app/usecases';
+import { EmailService, JwtService } from '@infra/services';
 
 import {
   BcryptService,
@@ -14,19 +18,21 @@ import {
 import {
   IBcryptService,
   IEmailValidatorService,
+  IJwtService,
   IUserRepository,
 } from '../core';
 
-import { AuthController } from '../presentation';
+import { AuthController, UpdateCredentialsController } from '../presentation';
 import { DatabaseModule } from './database.module';
 
 @Module({
   imports: [DatabaseModule],
-  controllers: [AuthController],
+  controllers: [AuthController, UpdateCredentialsController],
   providers: [
     AuthService,
     EmailService,
     EmailTemplate,
+    UpdateService,
     {
       provide: RegisterUserUseCase,
       useFactory: (
@@ -49,10 +55,17 @@ import { DatabaseModule } from './database.module';
       },
       inject: ['PrismaService'],
     },
+    {
+      provide: RecoveryPasswordUseCase,
+      useFactory: (userRepository: IUserRepository) =>
+        new RecoveryPasswordUseCase(userRepository),
+      inject: ['IUserRepository'],
+    },
     { provide: 'IBcryptService', useClass: BcryptService },
     { provide: 'IEmailValidatorService', useClass: EmailValidatorService },
     { provide: 'IUserRepository', useClass: UserRepository },
     { provide: 'PrismaService', useClass: PrismaService },
+    { provide: 'IJwtService', useClass: JwtService },
     BcryptService,
     EmailValidatorService,
     UserRepository,

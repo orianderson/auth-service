@@ -3,6 +3,6 @@ import { Either } from '../helpers';
 
 export interface IJwtService {
   createToken(payload: object, options: Options): string;
-  checkToken(token: string, secret: string): Promise<Either<Error, JwtPayload>>;
+  checkToken(token: string, secret: string): Either<Error, JwtPayload>;
   decodeToken(token: string, options: DecodeOptions): any;
 }

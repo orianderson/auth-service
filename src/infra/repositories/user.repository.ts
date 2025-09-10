@@ -18,14 +18,30 @@ export class UserRepository implements IUserRepository {
   }
 
   async findByEmail(email: string): Promise<
-    | (Pick<UserProps, 'email' | 'id' | 'systemId'> & {
+    | (Pick<UserProps, 'email' | 'id' | 'systemId' | 'name'> & {
         roles: { id: string; name: string }[];
-      })
+      } & { emailVerificationToken: string })
     | null
   > {
     const user = await this.userDatabase.user.findUnique({
       where: { email },
-      include: {
+      // include: {
+      //   roles: {
+      //     select: {
+      //       id: true,
+      //       role: {
+      //         select: {
+      //           name: true,
+      //         },
+      //       },
+      //     },
+      //   },
+      // },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        system_id: true,
         roles: {
           select: {
             id: true,
@@ -43,10 +59,22 @@ export class UserRepository implements IUserRepository {
       return null;
     }
 
+    const token = generateToken();
+
+    await this.userDatabase.user.update({
+      where: { email },
+      data: {
+        emailVerificationToken: token,
+        emailVerificationTokenExpiresAt: new Date(Date.now() + 15 * 60 * 1000), // 15 minutes
+      },
+    });
+
     return {
       id: user.id,
       email: user.email,
       systemId: user.system_id,
+      name: user.name,
+      emailVerificationToken: token,
       roles: user.roles.map((userRole) => ({
         id: userRole.id,
         name: userRole.role.name,
