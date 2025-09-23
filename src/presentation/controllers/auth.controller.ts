@@ -27,7 +27,7 @@ export class AuthController {
     });
   }
 
-  @Post('verify-email')
+  @Post('confirm-email')
   @HttpCode(StatusResponse.OK.statusCode)
   async confirmUserEmail(
     @Body() confirmEmailDto: ConfirmEmailDto,
